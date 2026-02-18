@@ -110,7 +110,7 @@ export default function GongSearchPage() {
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           placeholder="Search call transcripts..."
-          className="block w-full rounded-lg border border-gray-300 bg-white py-3 pl-11 pr-4 text-base text-gray-900 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+          className="block w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 py-3 pl-11 pr-4 text-base text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
         />
         {isFetching && (
           <div className="absolute inset-y-0 right-0 flex items-center pr-4">
@@ -122,7 +122,7 @@ export default function GongSearchPage() {
       {/* Filter Bar */}
       <FilterBar>
         <div className="flex items-center gap-2">
-          <label htmlFor="filter-account" className="text-sm font-medium text-gray-600">
+          <label htmlFor="filter-account" className="text-sm font-medium text-gray-600 dark:text-gray-400">
             Account
           </label>
           <input
@@ -131,12 +131,12 @@ export default function GongSearchPage() {
             value={routerSearch.accountId ?? ''}
             onChange={(e) => updateFilter({ accountId: e.target.value || undefined })}
             placeholder="Account ID"
-            className="w-40 rounded-md border border-gray-300 px-2.5 py-1.5 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-40 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2.5 py-1.5 text-sm text-gray-700 dark:text-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           />
         </div>
 
         <div className="flex items-center gap-2">
-          <label htmlFor="filter-opportunity" className="text-sm font-medium text-gray-600">
+          <label htmlFor="filter-opportunity" className="text-sm font-medium text-gray-600 dark:text-gray-400">
             Opportunity
           </label>
           <input
@@ -145,12 +145,12 @@ export default function GongSearchPage() {
             value={routerSearch.opportunityId ?? ''}
             onChange={(e) => updateFilter({ opportunityId: e.target.value || undefined })}
             placeholder="Opportunity ID"
-            className="w-40 rounded-md border border-gray-300 px-2.5 py-1.5 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-40 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2.5 py-1.5 text-sm text-gray-700 dark:text-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           />
         </div>
 
         <div className="flex items-center gap-2">
-          <label htmlFor="filter-from" className="text-sm font-medium text-gray-600">
+          <label htmlFor="filter-from" className="text-sm font-medium text-gray-600 dark:text-gray-400">
             From
           </label>
           <input
@@ -158,12 +158,12 @@ export default function GongSearchPage() {
             type="date"
             value={routerSearch.fromDate ?? ''}
             onChange={(e) => updateFilter({ fromDate: e.target.value || undefined })}
-            className="rounded-md border border-gray-300 px-2.5 py-1.5 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2.5 py-1.5 text-sm text-gray-700 dark:text-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           />
         </div>
 
         <div className="flex items-center gap-2">
-          <label htmlFor="filter-to" className="text-sm font-medium text-gray-600">
+          <label htmlFor="filter-to" className="text-sm font-medium text-gray-600 dark:text-gray-400">
             To
           </label>
           <input
@@ -171,7 +171,7 @@ export default function GongSearchPage() {
             type="date"
             value={routerSearch.toDate ?? ''}
             onChange={(e) => updateFilter({ toDate: e.target.value || undefined })}
-            className="rounded-md border border-gray-300 px-2.5 py-1.5 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-2.5 py-1.5 text-sm text-gray-700 dark:text-gray-300 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
           />
         </div>
 
@@ -186,7 +186,7 @@ export default function GongSearchPage() {
                 toDate: undefined,
               })
             }
-            className="ml-auto text-sm text-gray-500 hover:text-gray-700"
+            className="ml-auto text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
           >
             Clear filters
           </button>
@@ -222,7 +222,7 @@ export default function GongSearchPage() {
       ) : data && data.data.length > 0 ? (
         <div className="space-y-4">
           {/* Result Count */}
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             Showing {(currentPage - 1) * (data.pageSize ?? 25) + 1}
             {' '}-{' '}
             {Math.min(currentPage * (data.pageSize ?? 25), data.total)} of{' '}
@@ -238,12 +238,12 @@ export default function GongSearchPage() {
 
           {/* Pagination */}
           {data.totalPages > 1 && (
-            <div className="flex items-center justify-between border-t border-gray-200 pt-4">
+            <div className="flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-4">
               <button
                 type="button"
                 onClick={() => goToPage(currentPage - 1)}
                 disabled={currentPage <= 1}
-                className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Previous
               </button>
@@ -281,7 +281,7 @@ export default function GongSearchPage() {
                         className={`min-w-[2rem] rounded-md px-3 py-2 text-sm font-medium ${
                           item === currentPage
                             ? 'bg-indigo-600 text-white'
-                            : 'text-gray-700 hover:bg-gray-100'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                         }`}
                       >
                         {item}
@@ -294,7 +294,7 @@ export default function GongSearchPage() {
                 type="button"
                 onClick={() => goToPage(currentPage + 1)}
                 disabled={currentPage >= data.totalPages}
-                className="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
               </button>

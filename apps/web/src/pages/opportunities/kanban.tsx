@@ -33,7 +33,7 @@ export default function KanbanPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
           Pipeline Kanban
         </h1>
       </div>
@@ -44,7 +44,7 @@ export default function KanbanPage() {
           <div className="flex items-center gap-2">
             <label
               htmlFor="se-filter"
-              className="text-sm font-medium text-gray-700"
+              className="text-sm font-medium text-gray-700 dark:text-gray-300"
             >
               SE:
             </label>
@@ -52,7 +52,7 @@ export default function KanbanPage() {
               id="se-filter"
               value={seFilter}
               onChange={(e) => setSeFilter(e.target.value)}
-              className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             >
               <option value="">All SEs</option>
               {users
@@ -79,12 +79,12 @@ export default function KanbanPage() {
             return (
               <div
                 key={column.stage.id}
-                className="flex w-72 flex-shrink-0 flex-col rounded-lg border border-gray-200 bg-gray-50"
+                className="flex w-72 flex-shrink-0 flex-col rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50"
               >
                 {/* Lane Header */}
-                <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
+                <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 px-4 py-3">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-semibold text-gray-900">
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                       {column.stage.stageName}
                     </h3>
                     <Badge variant="default">
@@ -92,7 +92,7 @@ export default function KanbanPage() {
                     </Badge>
                   </div>
                   {totalAmount > 0 && (
-                    <span className="text-xs font-medium text-gray-500">
+                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
                       {formatCurrency(totalAmount)}
                     </span>
                   )}
@@ -101,7 +101,7 @@ export default function KanbanPage() {
                 {/* Lane Content */}
                 <div className="flex-1 space-y-3 overflow-y-auto p-3" style={{ maxHeight: '70vh' }}>
                   {column.opportunities.length === 0 ? (
-                    <p className="py-8 text-center text-xs text-gray-400">
+                    <p className="py-8 text-center text-xs text-gray-400 dark:text-gray-500">
                       No opportunities
                     </p>
                   ) : (

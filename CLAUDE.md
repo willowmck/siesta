@@ -63,3 +63,15 @@ scripts/             # Database initialization scripts
 - **Token encryption:** Salesforce/Gong/Google OAuth tokens encrypted in DB via pgcrypto and a 32-byte ENCRYPTION_KEY.
 - **Background jobs:** BullMQ workers for async Salesforce/Gong sync. Cron-scheduled via node-cron.
 - **Production:** Single Docker container serves static frontend + API on port 3000. Kubernetes manifests in `k8s/`.
+
+## Deployment
+
+GKE cluster runs `amd64` nodes. Always build the Docker image with `--platform linux/amd64`.
+
+```bash
+npm run build
+docker build --platform linux/amd64 -f Dockerfile.prod -t us-central1-docker.pkg.dev/field-engineering-us/siesta/siesta:latest .
+docker push us-central1-docker.pkg.dev/field-engineering-us/siesta/siesta:latest
+kubectl rollout restart deployment/siesta -n siesta
+kubectl rollout status deployment/siesta -n siesta
+```

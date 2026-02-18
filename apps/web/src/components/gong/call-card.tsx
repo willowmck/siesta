@@ -50,18 +50,18 @@ export default function CallCard({ call, className, onClick }: CallCardProps) {
   const content = (
     <div
       className={clsx(
-        'bg-white rounded-lg border border-gray-200 p-5 hover:shadow-md transition-shadow cursor-pointer',
+        'bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-5 hover:shadow-md transition-shadow cursor-pointer',
         className,
       )}
       onClick={onClick}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <h3 className="text-base font-semibold text-gray-900 truncate">
+          <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 truncate">
             {call.title || 'Untitled Call'}
           </h3>
 
-          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500">
+          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
             {call.started && (
               <span>{formatDate(call.started)}</span>
             )}
@@ -85,7 +85,7 @@ export default function CallCard({ call, className, onClick }: CallCardProps) {
         </div>
 
         {call.media && (
-          <span className="shrink-0 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600 capitalize">
+          <span className="shrink-0 rounded-full bg-gray-100 dark:bg-gray-700 px-2.5 py-1 text-xs font-medium text-gray-600 dark:text-gray-300 capitalize">
             {call.media}
           </span>
         )}
@@ -94,8 +94,8 @@ export default function CallCard({ call, className, onClick }: CallCardProps) {
       {(call.accountName || call.opportunityName) && (
         <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
           {call.accountName && (
-            <span className="inline-flex items-center gap-1 text-gray-600">
-              <span className="font-medium text-gray-500">Account:</span>
+            <span className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-400">
+              <span className="font-medium text-gray-500 dark:text-gray-400">Account:</span>
               {call.accountId ? (
                 <Link
                   to="/accounts/$accountId"
@@ -112,8 +112,8 @@ export default function CallCard({ call, className, onClick }: CallCardProps) {
           )}
 
           {call.opportunityName && (
-            <span className="inline-flex items-center gap-1 text-gray-600">
-              <span className="font-medium text-gray-500">Opportunity:</span>
+            <span className="inline-flex items-center gap-1 text-gray-600 dark:text-gray-400">
+              <span className="font-medium text-gray-500 dark:text-gray-400">Opportunity:</span>
               {call.opportunityId ? (
                 <Link
                   to="/opportunities/$opportunityId"

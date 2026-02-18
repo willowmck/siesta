@@ -5,13 +5,24 @@ import type {
   SfOpportunity,
   SfContact,
   SfActivity,
+  GongCall,
   PaginatedResponse,
 } from '@siesta/shared';
 
 interface AccountFilters {
   search?: string;
+  assignedSeUserId?: string;
   page?: number;
   pageSize?: number;
+}
+
+interface OpportunityWithCalls extends SfOpportunity {
+  calls: GongCall[];
+}
+
+interface OpportunitiesWithCallsResponse {
+  opportunities: OpportunityWithCalls[];
+  unlinkedCalls: GongCall[];
 }
 
 function buildQueryString(filters: Record<string, unknown>): string {
@@ -78,6 +89,20 @@ export function useAccountActivities(id: string | undefined) {
   return useQuery<SfActivity[]>({
     queryKey: ['accounts', id, 'activities'],
     queryFn: () => api.get<SfActivity[]>(`/accounts/${id}/activities`),
+    enabled: !!id,
+  });
+}
+
+/**
+ * Fetch opportunities for an account with their Gong calls nested.
+ */
+export function useAccountOpportunitiesWithCalls(id: string | undefined) {
+  return useQuery<OpportunitiesWithCallsResponse>({
+    queryKey: ['accounts', id, 'opportunities-with-calls'],
+    queryFn: () =>
+      api.get<OpportunitiesWithCallsResponse>(
+        `/accounts/${id}/opportunities-with-calls`,
+      ),
     enabled: !!id,
   });
 }

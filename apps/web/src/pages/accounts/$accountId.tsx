@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useParams, useNavigate } from '@tanstack/react-router';
 import {
   useAccount,
-  useAccountOpportunities,
+  useAccountOpportunitiesWithCalls,
   useAccountContacts,
   useAccountActivities,
 } from '../../api/queries/accounts';
@@ -17,54 +17,21 @@ import NoteList from '../../components/notes/note-list';
 import SortableCardList, {
   type SortableSection,
 } from '../../components/common/sortable-card-list';
-import { useCalls } from '../../api/queries/gong';
 import { formatCurrency } from '../../lib/currency';
 import { formatDate } from '../../lib/date';
-import type { SfOpportunity, SfContact } from '@siesta/shared';
+import type { SfContact } from '@siesta/shared';
 
 export default function AccountDetailPage() {
   const { accountId } = useParams({ strict: false });
   const navigate = useNavigate();
 
   const { data: account, isLoading: accountLoading } = useAccount(accountId);
-  const { data: opportunities, isLoading: oppsLoading } =
-    useAccountOpportunities(accountId);
+  const { data: oppsWithCalls, isLoading: oppsLoading } =
+    useAccountOpportunitiesWithCalls(accountId);
   const { data: contacts, isLoading: contactsLoading } =
     useAccountContacts(accountId);
   const { data: activities, isLoading: activitiesLoading } =
     useAccountActivities(accountId);
-  const { data: callsData, isLoading: callsLoading } =
-    useCalls({ accountId });
-
-  const oppColumns: Column<SfOpportunity>[] = useMemo(
-    () => [
-      { key: 'name', header: 'Name' },
-      { key: 'stageName', header: 'Stage' },
-      {
-        key: 'amount',
-        header: 'Amount',
-        render: (row) => formatCurrency(row.amount),
-      },
-      {
-        key: 'closeDate',
-        header: 'Close Date',
-        render: (row) => formatDate(row.closeDate),
-      },
-      {
-        key: 'isClosed',
-        header: 'Status',
-        render: (row) =>
-          row.isClosed ? (
-            <Badge variant={row.isWon ? 'success' : 'danger'}>
-              {row.isWon ? 'Won' : 'Lost'}
-            </Badge>
-          ) : (
-            <Badge variant="info">Open</Badge>
-          ),
-      },
-    ],
-    [],
-  );
 
   const contactColumns: Column<SfContact>[] = useMemo(
     () => [
@@ -111,28 +78,98 @@ export default function AccountDetailPage() {
         id: 'opportunities',
         render: (dragHandleProps) => (
           <Card
-            title={`Opportunities (${opportunities?.length ?? 0})`}
+            title={`Opportunities (${oppsWithCalls?.opportunities.length ?? 0})`}
             dragHandleProps={dragHandleProps}
           >
             {oppsLoading ? (
-              <p className="text-sm text-gray-500">Loading opportunities...</p>
-            ) : opportunities && opportunities.length > 0 ? (
-              <DataTable
-                columns={oppColumns}
-                data={opportunities as unknown as Record<string, unknown>[]}
-                keyExtractor={(row) => (row as unknown as SfOpportunity).id}
-                onRowClick={(row) => {
-                  const opp = row as unknown as SfOpportunity;
-                  navigate({
-                    to: '/opportunities/$opportunityId',
-                    params: { opportunityId: opp.id },
-                  });
-                }}
-              />
+              <p className="text-sm text-gray-500 dark:text-gray-400">Loading opportunities...</p>
+            ) : oppsWithCalls && oppsWithCalls.opportunities.length > 0 ? (
+              <div className="space-y-4">
+                {oppsWithCalls.opportunities.map((opp) => (
+                  <div key={opp.id} className="rounded-lg border border-gray-200 dark:border-gray-700">
+                    {/* Opportunity header */}
+                    <div
+                      className="flex items-center justify-between gap-4 p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                      onClick={() =>
+                        navigate({
+                          to: '/opportunities/$opportunityId',
+                          params: { opportunityId: opp.id },
+                        })
+                      }
+                    >
+                      <div className="min-w-0 flex-1">
+                        <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 truncate">
+                          {opp.name}
+                        </h4>
+                        <div className="mt-1 flex flex-wrap items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                          <span>{opp.stageName}</span>
+                          {opp.amount && <span>{formatCurrency(opp.amount)}</span>}
+                          <span>Close: {formatDate(opp.closeDate)}</span>
+                        </div>
+                      </div>
+                      <div className="shrink-0">
+                        {opp.isClosed ? (
+                          <Badge variant={opp.isWon ? 'success' : 'danger'}>
+                            {opp.isWon ? 'Won' : 'Lost'}
+                          </Badge>
+                        ) : (
+                          <Badge variant="info">Open</Badge>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Nested Gong calls */}
+                    {opp.calls.length > 0 && (
+                      <div className="border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 px-4 py-3">
+                        <p className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                          Gong Calls ({opp.calls.length})
+                        </p>
+                        <div className="space-y-2">
+                          {opp.calls.map((call) => (
+                            <CallCard
+                              key={call.id}
+                              call={call}
+                              onClick={() =>
+                                navigate({
+                                  to: '/gong/$callId',
+                                  params: { callId: call.id },
+                                })
+                              }
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             ) : (
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 No opportunities for this account.
               </p>
+            )}
+
+            {/* Unlinked Gong calls (linked to account but not a specific opportunity) */}
+            {oppsWithCalls && oppsWithCalls.unlinkedCalls.length > 0 && (
+              <div className="mt-6">
+                <h4 className="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Other Gong Calls ({oppsWithCalls.unlinkedCalls.length})
+                </h4>
+                <div className="space-y-2">
+                  {oppsWithCalls.unlinkedCalls.map((call) => (
+                    <CallCard
+                      key={call.id}
+                      call={call}
+                      onClick={() =>
+                        navigate({
+                          to: '/gong/$callId',
+                          params: { callId: call.id },
+                        })
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
             )}
           </Card>
         ),
@@ -145,7 +182,7 @@ export default function AccountDetailPage() {
             dragHandleProps={dragHandleProps}
           >
             {contactsLoading ? (
-              <p className="text-sm text-gray-500">Loading contacts...</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Loading contacts...</p>
             ) : contacts && contacts.length > 0 ? (
               <DataTable
                 columns={contactColumns}
@@ -153,7 +190,7 @@ export default function AccountDetailPage() {
                 keyExtractor={(row) => (row as unknown as SfContact).id}
               />
             ) : (
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 No contacts for this account.
               </p>
             )}
@@ -165,41 +202,9 @@ export default function AccountDetailPage() {
         render: (dragHandleProps) => (
           <Card title="Activity Timeline" dragHandleProps={dragHandleProps}>
             {activitiesLoading ? (
-              <p className="text-sm text-gray-500">Loading activities...</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Loading activities...</p>
             ) : (
               <ActivityTimeline activities={activities ?? []} />
-            )}
-          </Card>
-        ),
-      },
-      {
-        id: 'gong-calls',
-        render: (dragHandleProps) => (
-          <Card
-            title={`Gong Calls (${callsData?.calls.length ?? 0})`}
-            dragHandleProps={dragHandleProps}
-          >
-            {callsLoading ? (
-              <p className="text-sm text-gray-500">Loading calls...</p>
-            ) : callsData && callsData.calls.length > 0 ? (
-              <div className="space-y-3">
-                {callsData.calls.map((call) => (
-                  <CallCard
-                    key={call.id}
-                    call={call}
-                    onClick={() =>
-                      navigate({
-                        to: '/gong/$callId',
-                        params: { callId: call.id },
-                      })
-                    }
-                  />
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-gray-500">
-                No Gong calls linked to this account.
-              </p>
             )}
           </Card>
         ),
@@ -215,16 +220,13 @@ export default function AccountDetailPage() {
     ];
   }, [
     account,
-    opportunities,
+    oppsWithCalls,
     oppsLoading,
-    oppColumns,
     contacts,
     contactsLoading,
     contactColumns,
     activities,
     activitiesLoading,
-    callsData,
-    callsLoading,
     navigate,
     accountId,
   ]);
@@ -242,8 +244,8 @@ export default function AccountDetailPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">{account.name}</h1>
-        <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{account.name}</h1>
+        <div className="mt-1 flex flex-wrap items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
           {account.industry && (
             <Badge variant="default">{account.industry}</Badge>
           )}
